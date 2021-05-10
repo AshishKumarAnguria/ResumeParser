@@ -65,21 +65,15 @@ def get_total_experience(txt):
                         continue
                     yr=re.findall(r'\d\d\d\d',e[0])
 
-                    if len(yr)>0 and int(yr[0])<2022 and int(yr[0])>1990:
-                        
+                    if len(yr)>0 and int(yr[0])<2022 and int(yr[0])>1990:                       
                         y=int(yr[0])
-
                         try:
                             date.append(e[1])
-                            
                             if len(date)==2:
                                 if (date[0].year,date[1].year) in date_check:
                                     date=[]
                                     continue
-                                
-                                #print("f3:",date_check)
-                                date_check.append((date[0].year,date[1].year))
-            
+                                date_check.append((date[0].year,date[1].year))          
                         except:
                             pass
                         sy=min(y,sy)
@@ -94,12 +88,6 @@ def get_total_experience(txt):
         
                 except:
                     pass
-                
-                
-                #print(t)
-        
-    #print("total experience:",ey,"-",sy,"->",ey-sy)
-    #print("total experience-T:",T_exp.years," ",T_exp.months)
     return str(T_exp.years)+"/"+str(T_exp.months)
 
 def find_name(txt):
@@ -121,23 +109,27 @@ def find_name(txt):
                 name+=t[0]+" "
                 #print(t)
     return name
+
 for filename in sys.argv[1:]:
-    
         text_raw=str(textract.process((str(filename))))
-        
         txt = bytes(text_raw, 'utf-8').decode('unicode_escape')
         text        = ' '.join((txt.split()))
-     
-        
-        
+
         name=find_name(txt)
         emails = re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", text)
         contact = re.findall(r'[\+\()]?[1-9][0-9 .\-\(\)]{8,}[0-9]', text)
         corr_contact=[]
         for c in contact:
-      
             if len(re.findall(r'\d\d\d\d\d',c))>0 or len(re.findall(r'\d\d\d\d\d\d\d\d\d\d',c))>1 :
                 corr_contact.append(c)
+                
+        lines = txt.split('\n')
+        f = open("parsed_cv/"+name, "w")
+        for line in lines:
+            for word in remove_data:
+                line = line.replace(word, "")
+            f.write(line+"\n")
+        f.close()
         
         print("NAME:",name)
         print("EMAIL:",emails)
